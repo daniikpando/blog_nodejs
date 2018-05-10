@@ -6,11 +6,16 @@
  */
 
 const express = require("express"),
-    info = require("./utils/readCommand"),
+    bodyParser = require('body-parser'),
     conn = require("./connections/db"),
+    info = require("./utils/readCommand"),
     routesArticle = require("./routes/articleRoutes"),
     PORT = info.port,
     app = express();
+
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/api/', routesArticle)
 

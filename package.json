@@ -11,6 +11,7 @@
   "author": "Daniel Felipe Piñeros Calderón <daniikpando13@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "body-parser": "^1.18.2",
     "commander": "^2.15.1",
     "express": "^4.16.3",
     "jsonfile": "^4.0.0",
