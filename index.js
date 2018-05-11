@@ -10,6 +10,7 @@ const express = require("express"),
     conn = require("./connections/db"),
     info = require("./utils/readCommand"),
     routesArticle = require("./routes/articleRoutes"),
+    routesUser = require("./routes/userRoutes"),
     PORT = info.port,
     app = express();
 
@@ -18,6 +19,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/api/', routesArticle)
+app.use('/api/', routesUser)
 
 app.listen(PORT, err => {
     if(err) return console.log(`Ha ocurrido un error en el servidor: \n\t${err}`)
