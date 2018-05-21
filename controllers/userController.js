@@ -1,5 +1,6 @@
 const User = require("../models/user"),
-       _response = require("../utils/responser");
+       _response = require("../utils/responser"), 
+       bcrypt = require("bcrypt-nodejs");
 
 class UserController {
 
@@ -26,20 +27,39 @@ class UserController {
         UserController._findUser(res, {username: data, password: password})
     }
     signup(req, res) {
-        let email = req.body.email; 
-
-        let isEmail = UserController.validarEmail(email);
-
-        if(!isEmail) {
-            return _response(res,400, "El email es incorrecto");
-        }
-        _response(res,200, "dede",{
-            message: "Registrarse"
+        let user = new User({
+            password_confirmation: req.body.password_confirmation,
+            id: req.body.id,
+            email: req.body.email,
+            username: req.body.username,
+            password: req.body.password
         });
+        const promise = UserController.encryptPass(user);
+        promise
+            .then( (obj) => {
+                console.log("p1: " + obj.password);
+                console.log("p2: " + obj.password_confirmation);
+                obj.save((err, doc) => {
+                    if(err) return _response(res,500, "El usuario no se pudo registrar", err);
+                    _response(res,200, "Usuario registrado exitosamente", doc);
+                });
+             })
+            .catch( (err) => {
+                if(err) return _response(res, 500, "El usuario no se pudo registrar", err);
+            });
     }
+    static async encryptPass(obj) {
+        let key; 
+        bcrypt.genSalt(10, (err, salt) => {
+            if(err) throw err;
+            key = salt;
+        });
 
-    static validarEmail(value) {
-        return /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test(value)
+        bcrypt.hash(obj.password, key, null, (err, hash) => {
+            if(err) throw err;
+            obj.password = String(hash);
+        });
+        return obj;
     }
 }
 
